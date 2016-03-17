@@ -1,0 +1,9 @@
+ parity gamei ::= [parity hidentifier i ;] hnode speci
+
+ hnode speci ::= hidentifier i hpriorityi howner i hsuccessorsi [hnamei] ;
+ hidentifier i ::= N
+ hpriorityi ::= N
+ howner i ::= 0 | 1
+ hsuccessorsi ::= hidentifier i (, hidentifier i)
+
+ hnamei ::= " ( any ASCII string not containing ‘"’) "
