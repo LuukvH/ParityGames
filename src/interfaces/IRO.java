@@ -1,22 +1,21 @@
 package interfaces;
 
-import java.util.ArrayList;
-import java.util.List;
+import models.ProgressMeasure.RO;
 
 /**
  * Created by laj on 17-3-2016.
  *
  * The abstract class progress measure, this is base for the Progress Measures
  */
-public abstract class IProgressMeasure {
+public abstract class IRO {
 
     protected int maxPriority;
     protected int[] measure;
     protected boolean top = false;
 
-    protected IProgressMeasure(int maxPriority) {
+    protected IRO(int maxPriority) {
         this.maxPriority = maxPriority;
-        measure = new int[(int)Math.floorDiv(maxPriority, 2)];
+        measure = new int[(int)Math.floorDiv(maxPriority + 1, 2)];
     }
 
     public int getMaxPriority() {
@@ -34,14 +33,12 @@ public abstract class IProgressMeasure {
         return measure[index];
     }
 
-    public abstract boolean Increase(int priority);
-
     public String toString() {
         if (top) { return "(T)"; };
 
         StringBuilder sb = new StringBuilder();
         sb.append("(");
-        for (int i = 0; i < maxPriority; i++) {
+        for (int i = 0; i < maxPriority + 1; i++) {
             if ( (i & 1) == 0 ) {
                 sb.append("0,");
             } else {
