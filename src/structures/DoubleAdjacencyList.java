@@ -1,4 +1,4 @@
-package models;
+package structures;
 
 import interfaces.IAdjacencyList;
 

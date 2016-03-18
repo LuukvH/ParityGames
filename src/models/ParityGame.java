@@ -1,13 +1,9 @@
 package models;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
+import structures.DoubleAdjacencyList;
 import interfaces.IAdjacencyList;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by laj on 17-3-2016.
@@ -22,6 +18,7 @@ import java.util.Map;
 public class ParityGame {
     private int maxvalue;
 
+    public Set<Integer> V;
     public IAdjacencyList E;
     public int[] p;
     public Boolean[] player; // Even = true, Odd = false (hopefully!!!)
@@ -31,7 +28,7 @@ public class ParityGame {
     public ParityGame(int maxvalue) {
         this.maxvalue = maxvalue;
 
-        //V = new int[maxvalue];
+        V = new LinkedHashSet<Integer>(maxvalue);
         E = new DoubleAdjacencyList(maxvalue);
         p = new int[maxvalue];
         player = new Boolean[maxvalue];

@@ -1,4 +1,5 @@
 import models.ParityGameFactory;
+import models.ProgressMeasure.BaseProgressMeasure;
 import models.ProgressMeasure.MaxProgressMeasure;
 import models.ParityGame;
 import models.ProgressMeasure.MaxProgressMeasureFactory;
@@ -10,20 +11,19 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        ParityGame parityGame  = ParityGameFactory.CreateExample();
+        ParityGame parityGame = ParityGameFactory.CreateExample();
 
         MaxProgressMeasure mpm = MaxProgressMeasureFactory.Create(parityGame);
-        System.out.println(String.format("Max Progress Measure: %s", mpm.toString()));
+        System.out.println(String.format("Max Progress Measure: %s", mpm.toTopString()));
 
-        MaxProgressMeasure ro = new MaxProgressMeasure(3);
-        ro.Set(1,  2);
-        ro.Set(3,  2);
-        System.out.println("ROS: " + ro.toString());
+        BaseProgressMeasure pm1 = new ProgressMeasure(parityGame.getMaxPriority());
+        BaseProgressMeasure pm2 = new ProgressMeasure(parityGame.getMaxPriority());
 
-        ProgressMeasure pm = new ProgressMeasure(mpm);
-            for (int i =0; i < 12; i++) {
+        for (int i = 0; i < 5; i++) {
+            pm1 = pm1.Increase(mpm, 1);
+            System.out.println(pm1.toTopString());
+            System.out.println(pm1.toString());
+        }
 
-                System.out.println(pm.toString());
-            }
     }
 }

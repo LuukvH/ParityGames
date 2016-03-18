@@ -9,7 +9,7 @@ import interfaces.IProgressMeasure;
  * Increase will increase the counter for the given priority.
  * Set can set the value of an priority directly.
  */
-public class MaxProgressMeasure extends AbstractProgressMeasure implements IProgressMeasure {
+public class MaxProgressMeasure extends BaseProgressMeasure implements IProgressMeasure {
 
     public MaxProgressMeasure(int maxPriority) {
         super(maxPriority);

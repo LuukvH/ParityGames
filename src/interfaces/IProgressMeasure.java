@@ -1,6 +1,6 @@
 package interfaces;
 
-import models.ProgressMeasure.AbstractProgressMeasure;
+import models.ProgressMeasure.BaseProgressMeasure;
 
 /**
  * Created by laj on 18-3-2016.
@@ -10,13 +10,16 @@ public interface IProgressMeasure {
 
     boolean Top();
 
-    boolean Equals(IProgressMeasure ro);
+    boolean Equals(BaseProgressMeasure pm);
 
-    boolean Equals(IProgressMeasure ro, int priority);
+    boolean Equals(BaseProgressMeasure pm, int priority);
 
     int Get(int priority);
 
+    // Returns a new increased progressmeasure
+    BaseProgressMeasure Increase(BaseProgressMeasure pm, int priority);
+
     String toString();
 
-    IProgressMeasure Increase(IProgressMeasure pm, int priority);
+    String toTopString();
 }
