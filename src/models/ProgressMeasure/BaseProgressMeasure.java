@@ -80,6 +80,7 @@ public abstract class BaseProgressMeasure implements IProgressMeasure {
         return npm;
     }
 
+    // Watch out i used recursion here
     private boolean Increase(BaseProgressMeasure npm, BaseProgressMeasure pm, int priority) {
         if (priority <= 0 || priority > maxPriority || npm.top || (priority & 1) == 0)
             return false;
