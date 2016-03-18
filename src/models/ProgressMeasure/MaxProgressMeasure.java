@@ -1,18 +1,19 @@
 package models.ProgressMeasure;
 
-import interfaces.IRO;
+import interfaces.IProgressMeasure;
 
 /**
  * Created by laj on 17-3-2016.
  *
- * This class can be used to set the MaxRO.
+ * This class can be used to set the MaxProgressMeasure.
  * Increase will increase the counter for the given priority.
  * Set can set the value of an priority directly.
  */
-public class MaxRO extends IRO {
+public class MaxProgressMeasure extends AbstractProgressMeasure implements IProgressMeasure {
 
-    public MaxRO(int maxPriority) {
+    public MaxProgressMeasure(int maxPriority) {
         super(maxPriority);
+        top = true;
     }
 
     public boolean Set(int priority, int value) {
