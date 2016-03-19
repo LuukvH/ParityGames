@@ -7,6 +7,9 @@ import models.ProgressMeasure.ProgressMeasure;
 
 import java.io.IOException;
 
+import spark.Spark;
+import static spark.Spark.*;
+
 public class Main {
 
     public static void main(String[] args) throws IOException {
@@ -18,6 +21,12 @@ public class Main {
 
         BaseProgressMeasure pm1 = new ProgressMeasure(parityGame.getMaxPriority());
         BaseProgressMeasure pm2 = new ProgressMeasure(parityGame.getMaxPriority());
+
+
+        Spark.staticFileLocation("/html");
+        get("/hectopunten", "application/json", (req, res) -> {
+            return  "";
+        });
 
         for (int i = 0; i < 5; i++) {
             pm1 = pm1.Increase(mpm, 1);
