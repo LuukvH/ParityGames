@@ -1,4 +1,4 @@
-package models.Lifting.Strategy;
+package models.Lifting.strategy;
 
 import interfaces.ILiftingStrategy;
 import models.ParityGame;
@@ -10,13 +10,19 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public class InputOrderStrategy implements ILiftingStrategy {
 
     private ParityGame parityGame;
-
+    private int currentPos;
     public InputOrderStrategy(ParityGame parityGame) {
         this.parityGame = parityGame;
+        this.currentPos = 0; //start from 0
     }
 
-    // Todo: return next vertice to lift
     public int Next() {
-        throw new NotImplementedException();
+        if (currentPos < parityGame.V.size()-1)
+        {
+            return ++currentPos;
+        }
+        else
+            currentPos = 0;
+        return currentPos;
     }
 }
