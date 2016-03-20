@@ -9,5 +9,5 @@ public interface Person {
 
     int age();
 
-    public void Drive();
+    public String Drive();
 }
