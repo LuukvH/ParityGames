@@ -1,6 +1,8 @@
-package models.Lifting.Strategy;
+package models.Lifting.strategy;
 
 import interfaces.ILiftingStrategy;
+import models.Lifting.strategy.InputOrderStrategy;
+import models.Lifting.strategy.RandomStrategy;
 import models.ParityGame;
 
 /**

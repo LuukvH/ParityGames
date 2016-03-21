@@ -80,6 +80,23 @@ public abstract class BaseProgressMeasure implements IProgressMeasure {
         return npm;
     }
 
+    // Compare two progress measures
+    // post return -1 if smaller, 0 if equals, 1 if equals
+    public static int Compare(BaseProgressMeasure p1, BaseProgressMeasure p2, int priority) {
+
+        int index = ((int)Math.floorDiv(priority, 2));
+
+        for (int i = 0; i < index; i++) {
+            if (p1.measure[i] < p2.measure[i]) {
+                return 1;
+            } else if (p1.measure[i] > p2.measure[i]) {
+                return -1;
+            }
+        }
+
+        return 0;
+    }
+
     // Watch out i used recursion here
     private boolean Increase(BaseProgressMeasure npm, BaseProgressMeasure pm, int priority) {
         if (priority <= 0 || priority > maxPriority || npm.top || (priority & 1) == 0)

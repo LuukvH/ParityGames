@@ -17,7 +17,6 @@ public class ProgressMeasure extends BaseProgressMeasure implements IProgressMea
         super(maxPriority);
     }
 
-
     private ProgressMeasure Clone(){
         ProgressMeasure pm = new ProgressMeasure(this.getMaxPriority());
         pm.measure = this.measure.clone();

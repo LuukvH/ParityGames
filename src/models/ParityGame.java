@@ -1,5 +1,6 @@
 package models;
 
+import models.ProgressMeasure.ProgressMeasure;
 import structures.DoubleAdjacencyList;
 import interfaces.IAdjacencyList;
 
@@ -24,6 +25,7 @@ public class ParityGame {
     public IAdjacencyList E;
     public int[] p;
     public Boolean[] player; // Even = true, Odd = false (hopefully!!!)
+    public ProgressMeasure[] progressMeasures;
 
     private int maxPriority;
 
@@ -34,9 +36,19 @@ public class ParityGame {
         E = new DoubleAdjacencyList(maxvalue);
         p = new int[maxvalue];
         player = new Boolean[maxvalue];
+
+        progressMeasures = new ProgressMeasure[maxvalue];
     }
 
-    public void setMaxPriority(int value) { maxPriority = value; }
+    public void setMaxPriority(int value) {
+        maxPriority = value;
+
+        // Initialize progressmeasures
+        for  (int i =0; i< maxvalue; i++) {
+            progressMeasures[i] = new ProgressMeasure(maxPriority);
+        }
+    }
+
     public int getMaxPriority() {
         return maxPriority;
     }
