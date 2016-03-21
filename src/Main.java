@@ -1,6 +1,8 @@
+import models.Man;
 import models.ParityGameFactory;
 import models.ProgressMeasure.*;
 import models.ParityGame;
+import models.Woman;
 
 import java.io.Console;
 import java.io.IOException;
@@ -48,6 +50,12 @@ public class Main {
         progressMeasures.add(mpm3);
 
         System.out.println("Result: " + ParityGameSolver.Min(progressMeasures, 5).toString());
+
+
+        Man m = new Man();
+        Woman w = new Woman();
+
+        m.Compare(w, w);
 
     }
 

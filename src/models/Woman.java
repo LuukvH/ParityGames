@@ -1,14 +1,12 @@
 package models;
 
-import interfaces.Person;
+import interfaces.IPerson;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import java.util.List;
 
 /**
  * Created by laj on 18-3-2016.
  */
-public class Woman implements Person {
+public class Woman extends BasePerson implements IPerson {
     @Override
     // Off course they always lie about this its just a constant
     //It's actually 23

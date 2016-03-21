@@ -1,10 +1,8 @@
 package models;
 
-import interfaces.Person;
+import interfaces.IPerson;
 
-import java.util.List;
-
-public class Man implements Person {
+public class Man extends BasePerson implements IPerson {
     @Override
     //No matter their age, their mental age is remains at 12
     public int age() {
