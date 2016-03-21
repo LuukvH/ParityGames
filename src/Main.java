@@ -22,6 +22,7 @@ public class Main {
         BaseProgressMeasure pm1 = new ProgressMeasure(parityGame.getMaxPriority());
         BaseProgressMeasure pm2 = new ProgressMeasure(parityGame.getMaxPriority());
 
+        parityGame.JSON();
 
         Spark.staticFileLocation("/html");
         get("/hectopunten", "application/json", (req, res) -> {

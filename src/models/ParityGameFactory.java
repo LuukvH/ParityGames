@@ -10,6 +10,14 @@ public class ParityGameFactory {
         ParityGame parityGame = new ParityGame(7);
         parityGame.setMaxPriority(3);
 
+        parityGame.V[0] = 0;
+        parityGame.V[1] = 1;
+        parityGame.V[2] = 2;
+        parityGame.V[3] = 3;
+        parityGame.V[4] = 4;
+        parityGame.V[5] = 5;
+        parityGame.V[6] = 6;
+
         // X  = 0, X' = 1, Y  = 2, Y' = 3, Z  = 4, Z' = 5, W  = 6
         parityGame.E.addEdge(0,0); // X  -> X
         parityGame.E.addEdge(0,1); // X  -> X'
