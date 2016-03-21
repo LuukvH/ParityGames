@@ -21,8 +21,8 @@ public class Woman implements Person {
     // Yeah woman can't drive
     // Men lie as well
     public String Drive() {
-        //throw new NotImplementedException();
-        return "Most amazing drivers are women";
+        throw new NotImplementedException();
+        //return "Most amazing drivers are women";
     }
 
 
