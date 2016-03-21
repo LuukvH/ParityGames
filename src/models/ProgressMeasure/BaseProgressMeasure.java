@@ -39,8 +39,8 @@ public abstract class BaseProgressMeasure implements IProgressMeasure {
             return false;
 
         int index = ((int) Math.floorDiv(priority, 2));
-        for (int i = index; i >= 0; i--) {
-            if (this.Get(i) != pm.Get(i))
+        for (int i = 0; i <= index; i++) {
+            if (this.measure[i] != pm.measure[i])
                 return false;
         }
 
@@ -86,7 +86,7 @@ public abstract class BaseProgressMeasure implements IProgressMeasure {
 
         int index = ((int)Math.floorDiv(priority, 2));
 
-        for (int i = 0; i < index; i++) {
+        for (int i = 0; i <= index; i++) {
             if (p1.measure[i] < p2.measure[i]) {
                 return 1;
             } else if (p1.measure[i] > p2.measure[i]) {
@@ -116,7 +116,7 @@ public abstract class BaseProgressMeasure implements IProgressMeasure {
         }
 
         if (pm.Top()) {
-            npm.measure = pm.measure;
+            npm.measure = pm.measure.clone();
             npm.top = pm.top;
         }
 

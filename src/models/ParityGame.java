@@ -21,32 +21,24 @@ import java.util.*;
 public class ParityGame {
     private int maxvalue;
 
-    public Set<Integer> V;
+    public List<Integer> V;
     public IAdjacencyList E;
     public int[] p;
     public Boolean[] player; // Even = true, Odd = false (hopefully!!!)
-    public ProgressMeasure[] progressMeasures;
 
     private int maxPriority;
 
     public ParityGame(int maxvalue) {
         this.maxvalue = maxvalue;
 
-        V = new LinkedHashSet<Integer>(maxvalue);
+        V = new ArrayList<Integer>(maxvalue);
         E = new DoubleAdjacencyList(maxvalue);
         p = new int[maxvalue];
         player = new Boolean[maxvalue];
-
-        progressMeasures = new ProgressMeasure[maxvalue];
     }
 
     public void setMaxPriority(int value) {
         maxPriority = value;
-
-        // Initialize progressmeasures
-        for  (int i =0; i< maxvalue; i++) {
-            progressMeasures[i] = new ProgressMeasure(maxPriority);
-        }
     }
 
     public int getMaxPriority() {

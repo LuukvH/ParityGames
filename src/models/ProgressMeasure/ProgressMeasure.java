@@ -17,6 +17,13 @@ public class ProgressMeasure extends BaseProgressMeasure implements IProgressMea
         super(maxPriority);
     }
 
+    public ProgressMeasure(BaseProgressMeasure bpm) {
+        super(bpm.getMaxPriority());
+
+        this.measure = bpm.measure;
+        this.top = bpm.top;
+    }
+
     private ProgressMeasure Clone(){
         ProgressMeasure pm = new ProgressMeasure(this.getMaxPriority());
         pm.measure = this.measure.clone();
@@ -25,7 +32,7 @@ public class ProgressMeasure extends BaseProgressMeasure implements IProgressMea
     }
 
     // Returns a new increased progressmeasure
-    public BaseProgressMeasure Increase(BaseProgressMeasure pm, int priority) {
+    public BaseProgressMeasure Increase(BaseProgressMeasure max, int priority) {
 
         ProgressMeasure npm = this.Clone();
 
@@ -33,7 +40,7 @@ public class ProgressMeasure extends BaseProgressMeasure implements IProgressMea
             return npm;
         }
 
-        npm.Increase(npm, pm, priority);
+        npm.Increase(npm, max, priority);
         return npm;
     }
 
@@ -42,11 +49,9 @@ public class ProgressMeasure extends BaseProgressMeasure implements IProgressMea
             return false;
 
         int index = ((int) Math.floorDiv(priority, 2));
-        if (npm.measure[index] < pm.Get(priority)) {
-            if (npm.measure[index] < pm.Get(priority)) {
+        if (npm.measure[index] < pm.measure[index]) {
                 npm.measure[index]++;
                 return true;
-            }
         }
 
         if (this.Increase(npm, pm, priority - 2)) {
