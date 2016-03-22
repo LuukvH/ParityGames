@@ -49,4 +49,22 @@ public class ParityGame {
         return p;
     }
 
+    public String JSON() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        // For every node
+        stringBuilder.append("[");
+        for(int i = 0; i < V.size(); i++) {
+            // Get all outgoing transitions
+            List<Integer> edges = E.outEdges(V.get(i));
+            for (int e = 0; e<edges.size(); e++) {
+                stringBuilder.append(String.format("{\"source\": %d, \"target\": %d, \"sign\": \"%s\", \"priority\": %d},", V.get(i), edges.get(e), player[V.get(i)] ? "even" : "odd", p[V.get(i)] ));
+            }
+        }
+        stringBuilder.deleteCharAt(stringBuilder.length()-1);
+        stringBuilder.append("]");
+        return  stringBuilder.toString();
+
+    }
+
 }

@@ -21,7 +21,7 @@ public class ParityGameFactory {
         // X  = 0, X' = 1, Y  = 2, Y' = 3, Z  = 4, Z' = 5, W  = 6
         parityGame.E.addEdge(0,0); // X  -> X
         parityGame.E.addEdge(0,1); // X  -> X'
-        parityGame.E.addEdge(0,4); // X  -> Z
+        parityGame.E.addEdge(1,4); // X' -> Z
         parityGame.E.addEdge(4,5); // Z  -> Z'
         parityGame.E.addEdge(5,5); // Z' -> Z'
         parityGame.E.addEdge(3,0); // Y' -> X
@@ -30,6 +30,7 @@ public class ParityGameFactory {
         parityGame.E.addEdge(1,2); // X' -> Y
         parityGame.E.addEdge(2,6); // Y  -> W
         parityGame.E.addEdge(6,6); // W  -> W
+        parityGame.E.addEdge(6,4); // W  -> Z
 
         parityGame.p[0] = 1; // X
         parityGame.p[1] = 1; // X'

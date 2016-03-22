@@ -11,6 +11,7 @@ import java.util.List;
  * Created by laj on 18-3-2016.
  */
 public class ParityGameSolver {
+    private boolean[] stable;
     private ParityGame parityGame;
     private ILiftingStrategy liftingStrategy;
     private ProgressMeasure[] progressMeasures;
@@ -25,6 +26,7 @@ public class ParityGameSolver {
     }
 
     private void Initialize() {
+        stable = new boolean[parityGame.V.size()];
         maxProgressMeasure = MaxProgressMeasureFactory.Create(parityGame);
         progressMeasures = new ProgressMeasure[parityGame.V.size()];
 
@@ -84,20 +86,42 @@ public class ParityGameSolver {
         }
     }
 
-    public void Solve() {
+    private boolean Stable() {
+        for (int i = 0; i < stable.length; i++) {
+            if(!stable[i])
+                return false;
+        }
+        return true;
+    }
 
+    public void Solve() {
         int i = 0;
         int v = liftingStrategy.Next();
-        while(i < 45) {
+
+        while(!Stable()) {
             ProgressMeasure lift = Lift(v);
+
+            // If vertex already stable skip and take next
+            if (stable[v]) {
+                v = liftingStrategy.Next();
+                continue;
+            }
+
             System.out.println(String.format("Lifting vertex: %d", v));
 
             // If progress measure hasn't changed go to next
             if (lift.Equals(progressMeasures[v], parityGame.p[v])) {
+                stable[v] = true;
                 progressMeasures[v] = lift;
                 v = liftingStrategy.Next();
             } else {
                 progressMeasures[v] = lift;
+
+                // For each inedge set stable false
+                List<Integer> inEdges = parityGame.E.inEdges(v);
+                for (int e : inEdges) {
+                    stable[e] = false;
+                }
             }
 
             System.out.println(toString(i));
@@ -109,7 +133,7 @@ public class ParityGameSolver {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("---- Itteration %d ---- \n", itter));
         for (int i = 0; i < parityGame.V.size(); i++) {
-            sb.append(String.format("%s \n", progressMeasures[i].toTopString()));
+            sb.append(String.format("%s %s \n", progressMeasures[i].toTopString(), stable[i]));
         }
         return sb.toString();
     }

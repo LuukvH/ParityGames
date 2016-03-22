@@ -2,13 +2,13 @@ import interfaces.ILiftingStrategy;
 import models.Lifting.strategy.InputOrderStrategy;
 import models.Man;
 import models.ParityGameFactory;
-import models.ProgressMeasure.*;
 import models.ParityGame;
 import models.Woman;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+
+import spark.Spark;
+import static spark.Spark.*;
 
 public class Main {
 
@@ -20,10 +20,8 @@ public class Main {
 
         Man m = new Man();
         Woman w = new Woman();
-        m.Compare(w, w);
+        m.Compare(m, m);
 
         solver.Solve();
     }
-
-
 }
