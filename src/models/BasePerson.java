@@ -14,11 +14,11 @@ public class BasePerson {
         }
 
         if ((p1 instanceof Man && p2 instanceof Woman) || (p1 instanceof Man && p2 instanceof Woman) ){
-            System.out.println("Off coarse men are much better, Also in driving.");
+            System.out.println("The woman is not an object. Cannot find means to compare, too good to understand.");
         }
 
         if ((p1 instanceof Woman && p2 instanceof Woman)){
-            System.out.println("Both can't drive.");
+            System.out.println("Both are equally annoyed by men.");
         }
 
 
