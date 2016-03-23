@@ -4,22 +4,28 @@ import interfaces.ILiftingStrategy;
 import models.ParityGame;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.util.Iterator;
+
 /**
  * Created by laj on 18-3-2016.
  */
 public class InputOrderStrategy implements ILiftingStrategy {
 
     private ParityGame parityGame;
-    private int currentPos = 0;
+    private Iterator<Integer> iterator;
     public InputOrderStrategy(ParityGame parityGame) {
         this.parityGame = parityGame;
-        this.currentPos = 0; //start from 0
+        iterator = parityGame.V.iterator();
+    }
+
+    public String Name() {
+        return "InputOrder";
     }
 
     public int Next() {
-        int v = parityGame.V.get(currentPos);
-        currentPos++;
-        currentPos = currentPos % parityGame.V.size() == 0 ? 0 : currentPos;
-        return v;
+        if (!iterator.hasNext()) {
+            iterator = parityGame.V.iterator();
+        }
+        return iterator.next();
     }
 }

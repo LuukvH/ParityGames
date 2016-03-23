@@ -31,8 +31,7 @@ public class DoubleAdjacencyList implements IAdjacencyList {
 
     @Override
     public boolean hasEdge(int i, int j) {
-        in.hasEdge(i, j);
-        return false;
+        return in.hasEdge(i, j);
     }
 
     @Override

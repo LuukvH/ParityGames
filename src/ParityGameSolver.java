@@ -116,12 +116,17 @@ public class ParityGameSolver {
                 v = liftingStrategy.Next();
             } else {
                 progressMeasures[v] = lift;
+                for(int s : parityGame.V)
+                    stable[s] = false;
 
+
+                /*
                 // For each inedge set stable false
                 List<Integer> inEdges = parityGame.E.inEdges(v);
                 for (int e : inEdges) {
                     stable[e] = false;
                 }
+                */
             }
 
             System.out.println(toString(i));

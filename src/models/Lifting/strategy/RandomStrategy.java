@@ -13,31 +13,26 @@ import java.util.Random;
 public class RandomStrategy implements ILiftingStrategy {
 
     private ParityGame parityGame;
-    private  Random randomGenerator;
-    private int currentPos;
-    private ArrayList<Integer> randomNumbers;
+    private Random randomGenerator;
+    private ArrayList<Integer> randomNumbers = new ArrayList<Integer>();
 
     public RandomStrategy(ParityGame parityGame) {
         this.parityGame = parityGame;
-        randomNumbers = new ArrayList<Integer>();
         randomGenerator = new Random();
-        currentPos = 0;
     }
 
-    // Todo: return next vertice to lift
+    public String Name() {
+        return "Random";
+    }
+
     public int Next() {
-        if (randomNumbers.size() == 0)
-        {
-            for (int i =0;i< parityGame.V.size();i++)
-            {
-                randomNumbers.add(i);
-            }
+        if (randomNumbers.isEmpty()) {
+            randomNumbers.addAll(parityGame.V);
         }
 
         int randomIndex = randomGenerator.nextInt(randomNumbers.size());
         int theNumber = randomNumbers.get(randomIndex);
         randomNumbers.remove(randomIndex);
         return theNumber;
-
     }
 }
