@@ -18,11 +18,16 @@ public class RandomStrategy implements ILiftingStrategy {
 
     public RandomStrategy(ParityGame parityGame) {
         this.parityGame = parityGame;
-        randomGenerator = new Random();
+        Clear();
     }
 
     public String Name() {
         return "Random";
+    }
+
+    public void Clear() {
+        randomGenerator = new Random();
+        randomNumbers.clear();
     }
 
     public int Next() {

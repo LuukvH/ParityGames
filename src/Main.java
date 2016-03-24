@@ -2,6 +2,7 @@ import interfaces.ILiftingStrategy;
 import models.Lifting.strategy.EvenSelfLoopsFirstStrategy;
 import models.Lifting.strategy.InputOrderStrategy;
 import models.Lifting.strategy.RandomStrategy;
+import models.Lifting.strategy.ReversedInputOrderStrategy;
 import models.Man;
 import models.ParityGameFactory;
 import models.ParityGame;
@@ -28,8 +29,8 @@ public class Main {
 
         // Do this one for a foler
         args = new String[6];
-        args[0] = "-t";
-        args[1] = "res/dining-games/";
+        args[0] = "-g";
+        args[1] = "res/elevator-games/elevator1_6.gm";
         args[2] = "-i";
         args[3] = "1";
         args[4] = "-s";
@@ -72,9 +73,10 @@ public class Main {
             }
 
             strategies.clear();
-            strategies.add(0);
-            strategies.add(1);
-            strategies.add(2);
+            //strategies.add(0);
+            //strategies.add(1);
+            strategies.add(3);
+            //strategies.add(3);
         }
 
         if (games.isEmpty()) {
@@ -86,8 +88,8 @@ public class Main {
         for (File game : games) {
             System.out.printf("Read Parity Game: %s", game.getName());
             Long startTime = System.nanoTime();
-            //parityGame = PGSolverReader.ReadFile(game.toString());
-            parityGame = ParityGameFactory.CreateExample();
+            parityGame = PGSolverReader.ReadFile(game.toString());
+            //parityGame = ParityGameFactory.CreateExample();
             System.out.printf(" (%f ms) \n", (System.nanoTime() - startTime) / (float) 1000000);
 
             if (parityGame == null) {
@@ -108,10 +110,14 @@ public class Main {
                     case 2:
                         liftingStrategy = new EvenSelfLoopsFirstStrategy(parityGame);
                         break;
+                    case 3:
+                        liftingStrategy = new ReversedInputOrderStrategy(parityGame);
+                        break;
                 }
 
                 Long resultsum = 0L;
                 for (int i =0; i < iterations; i++) {
+                    liftingStrategy.Clear();
                     solver = new ParityGameSolver(parityGame, liftingStrategy);
                     System.out.print(String.format("Evaluate: %12s - %s ", liftingStrategy.Name(), game.getName()));
                     startTime = System.nanoTime();
@@ -120,7 +126,7 @@ public class Main {
                     resultsum += difference;
                     System.out.printf("(%f ms) \n", (difference) / (float) 1000000);
                 }
-                System.out.printf("Average: %f ms \n", resultsum / (float) 100000);
+                System.out.printf("Average: %f ms \n", (resultsum / iterations) / (float) 100000);
                 System.out.println();
             }
         }

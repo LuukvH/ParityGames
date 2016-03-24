@@ -107,7 +107,7 @@ public class ParityGameSolver {
                 continue;
             }
 
-            System.out.println(String.format("Lifting vertex: %d", v));
+            // System.out.println(String.format("Lifting vertex: %d", v));
 
             // If progress measure hasn't changed go to next
             if (lift.Equals(progressMeasures[v], parityGame.p[v])) {
@@ -118,20 +118,12 @@ public class ParityGameSolver {
                 progressMeasures[v] = lift;
                 for(int s : parityGame.V)
                     stable[s] = false;
-
-
-                /*
-                // For each inedge set stable false
-                List<Integer> inEdges = parityGame.E.inEdges(v);
-                for (int e : inEdges) {
-                    stable[e] = false;
-                }
-                */
             }
 
-            System.out.println(toString(i));
+//            System.out.println(toString(i));
             i++;
         }
+        System.out.printf(", Nr of itterations: %d, ", i);
     }
 
     public String toString(int itter) {

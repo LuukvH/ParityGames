@@ -15,11 +15,15 @@ public class InputOrderStrategy implements ILiftingStrategy {
     private Iterator<Integer> iterator;
     public InputOrderStrategy(ParityGame parityGame) {
         this.parityGame = parityGame;
-        iterator = parityGame.V.iterator();
+        Clear();
     }
 
     public String Name() {
         return "InputOrder";
+    }
+
+    public void Clear() {
+        iterator = parityGame.V.iterator();
     }
 
     public int Next() {

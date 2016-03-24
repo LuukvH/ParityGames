@@ -7,5 +7,7 @@ public interface ILiftingStrategy {
 
     String Name();
 
+    void Clear();
+
     int Next();
 }
