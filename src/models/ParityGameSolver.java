@@ -1,3 +1,5 @@
+package models;
+
 import interfaces.ILiftingStrategy;
 import models.ParityGame;
 import models.ProgressMeasure.BaseProgressMeasure;
@@ -11,11 +13,11 @@ import java.util.List;
  * Created by laj on 18-3-2016.
  */
 public class ParityGameSolver {
-    private boolean[] stable;
     private ParityGame parityGame;
     private ILiftingStrategy liftingStrategy;
-    private ProgressMeasure[] progressMeasures;
+    public ProgressMeasure[] progressMeasures;
     private BaseProgressMeasure maxProgressMeasure;
+    public boolean print = false;
 
     public ParityGameSolver(ParityGame parityGame, ILiftingStrategy liftingStrategy)
     {
@@ -23,10 +25,11 @@ public class ParityGameSolver {
         this.liftingStrategy = liftingStrategy;
 
         Initialize();
+
+        this.liftingStrategy.Initialize(this);
     }
 
     private void Initialize() {
-        stable = new boolean[parityGame.V.size()];
         maxProgressMeasure = MaxProgressMeasureFactory.Create(parityGame);
         progressMeasures = new ProgressMeasure[parityGame.V.size()];
 
@@ -86,51 +89,34 @@ public class ParityGameSolver {
         }
     }
 
-    private boolean Stable() {
-        for (int i = 0; i < stable.length; i++) {
-            if(!stable[i])
-                return false;
-        }
-        return true;
-    }
-
     public void Solve() {
         int i = 0;
-        int v = liftingStrategy.Next();
+        int v;
 
-        while(!Stable()) {
+        while((v = liftingStrategy.Next()) != -1) {
             ProgressMeasure lift = Lift(v);
 
-            // If vertex already stable skip and take next
-            if (stable[v]) {
-                v = liftingStrategy.Next();
-                continue;
-            }
-
-            // System.out.println(String.format("Lifting vertex: %d", v));
-
-            // If progress measure hasn't changed go to next
-            if (lift.Equals(progressMeasures[v], parityGame.p[v])) {
-                stable[v] = true;
+            if (!Lift(v).Equals(progressMeasures[v], parityGame.p[v])) {
+                liftingStrategy.Lifted(v);
                 progressMeasures[v] = lift;
-                v = liftingStrategy.Next();
             } else {
                 progressMeasures[v] = lift;
-                for(int s : parityGame.V)
-                    stable[s] = false;
             }
 
-//            System.out.println(toString(i));
             i++;
+
+
+            System.out.println(toString(i));
         }
         System.out.printf(", Nr of itterations: %d, ", i);
+
     }
 
     public String toString(int itter) {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("---- Itteration %d ---- \n", itter));
         for (int i = 0; i < parityGame.V.size(); i++) {
-            sb.append(String.format("%s %s \n", progressMeasures[i].toTopString(), stable[i]));
+            sb.append(String.format("%s \n", progressMeasures[i].toTopString()));
         }
         return sb.toString();
     }
