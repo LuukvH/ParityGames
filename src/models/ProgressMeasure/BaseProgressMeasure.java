@@ -38,6 +38,9 @@ public abstract class BaseProgressMeasure implements IProgressMeasure {
         if (pm.getMaxPriority() != this.getMaxPriority())
             return false;
 
+        if ((priority & 1) == 0)
+            priority = priority - 1;
+
         int index = ((int) Math.floorDiv(priority, 2));
         for (int i = 0; i <= index; i++) {
             if (this.measure[i] != pm.measure[i])
@@ -83,6 +86,9 @@ public abstract class BaseProgressMeasure implements IProgressMeasure {
     // Compare two progress measures
     // post return -1 if smaller, 0 if equals, 1 if equals
     public static int Compare(BaseProgressMeasure p1, BaseProgressMeasure p2, int priority) {
+
+        if ((priority & 1) == 0)
+            priority = priority - 1;
 
         int index = ((int)Math.floorDiv(priority, 2));
 

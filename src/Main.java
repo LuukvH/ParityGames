@@ -1,23 +1,13 @@
 import interfaces.ILiftingStrategy;
-import models.Lifting.strategy.EvenSelfLoopsFirstStrategy;
-import models.Lifting.strategy.InputOrderStrategy;
-import models.Lifting.strategy.RandomStrategy;
-import models.Lifting.strategy.ReversedInputOrderStrategy;
-import models.Man;
-import models.ParityGameFactory;
+import models.Lifting.strategy.*;
 import models.ParityGame;
-import models.Woman;
-import models.PGSolverReader;
+import models.ParityGameFactory;
+import models.ParityGameSolver;
 import org.antlr.v4.runtime.misc.OrderedHashSet;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Set;
-
-//import spark.Spark;
-//import static spark.Spark.*;
 
 public class Main {
 
@@ -30,11 +20,11 @@ public class Main {
         // Do this one for a foler
         args = new String[6];
         args[0] = "-g";
-        args[1] = "res/elevator-games/elevator1_6.gm";
+        args[1] = "res/elevator-games/elevator1_3.gm";
         args[2] = "-i";
         args[3] = "1";
         args[4] = "-s";
-        args[5] = "2";
+        args[5] = "3";
 
         Set<File> games = new OrderedHashSet<File>();
         Set<Integer> strategies = new OrderedHashSet<Integer>();
@@ -88,8 +78,8 @@ public class Main {
         for (File game : games) {
             System.out.printf("Read Parity Game: %s", game.getName());
             Long startTime = System.nanoTime();
-            parityGame = PGSolverReader.ReadFile(game.toString());
-            //parityGame = ParityGameFactory.CreateExample();
+            //parityGame = PGSolverReader.ReadFile(game.toString());
+            parityGame = ParityGameFactory.CreateExample();
             System.out.printf(" (%f ms) \n", (System.nanoTime() - startTime) / (float) 1000000);
 
             if (parityGame == null) {
@@ -102,23 +92,26 @@ public class Main {
             for (Integer s : strategies) {
                 switch (s) {
                     case 0:
-                        liftingStrategy = new InputOrderStrategy(parityGame);
+                        liftingStrategy = new InputOrderLiftingStrategy(parityGame);
                         break;
                     case 1:
-                        liftingStrategy = new RandomStrategy(parityGame);
+                        liftingStrategy = new RandomLiftingStrategy(parityGame);
                         break;
                     case 2:
-                        liftingStrategy = new EvenSelfLoopsFirstStrategy(parityGame);
+                        liftingStrategy = new LinearLiftingStrategy(parityGame);
                         break;
                     case 3:
-                        liftingStrategy = new ReversedInputOrderStrategy(parityGame);
+                        liftingStrategy = new SelfLoopsLiftingStrategy(parityGame);
+                        break;
+                    case 4:
+                        liftingStrategy = new PredecessorLiftingStrategy(parityGame);
                         break;
                 }
 
                 Long resultsum = 0L;
                 for (int i =0; i < iterations; i++) {
-                    liftingStrategy.Clear();
                     solver = new ParityGameSolver(parityGame, liftingStrategy);
+                    solver.print = true;
                     System.out.print(String.format("Evaluate: %12s - %s ", liftingStrategy.Name(), game.getName()));
                     startTime = System.nanoTime();
                     solver.Solve();
