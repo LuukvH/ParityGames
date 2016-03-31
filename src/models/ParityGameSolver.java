@@ -7,6 +7,7 @@ import models.ProgressMeasure.MaxProgressMeasureFactory;
 import models.ProgressMeasure.ProgressMeasure;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -25,8 +26,6 @@ public class ParityGameSolver {
         this.liftingStrategy = liftingStrategy;
 
         Initialize();
-
-        this.liftingStrategy.Initialize(this);
     }
 
     private void Initialize() {
@@ -36,6 +35,8 @@ public class ParityGameSolver {
         for  (int i =0; i< parityGame.V.size(); i++) {
             progressMeasures[i] = new ProgressMeasure(parityGame.getMaxPriority());
         }
+
+        this.liftingStrategy.Initialize(this);
     }
 
     public BaseProgressMeasure getMaxProgressMeasure() {
@@ -89,7 +90,9 @@ public class ParityGameSolver {
         }
     }
 
-    public void Solve() {
+    public Result Solve() {
+        Long startTime = System.nanoTime();
+
         int i = 0;
         int v;
 
@@ -105,11 +108,15 @@ public class ParityGameSolver {
 
             i++;
 
-
-            System.out.println(toString(i));
+            if (print)
+                System.out.println(toString(i));
         }
-        System.out.printf(", Nr of itterations: %d, ", i);
 
+        // Generate results
+        Long duration = System.nanoTime() - startTime;
+        Result result = new Result(liftingStrategy.Name(), i, duration);
+
+        return result;
     }
 
     public String toString(int itter) {

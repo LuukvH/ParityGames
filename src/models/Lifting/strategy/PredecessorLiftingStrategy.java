@@ -21,9 +21,6 @@ public class PredecessorLiftingStrategy implements ILiftingStrategy {
     public PredecessorLiftingStrategy(ParityGame parityGame) {
 
         this.parityGame = parityGame;
-        queued = new boolean[parityGame.V.size()];
-        queue = new LinkedList<Integer>();
-
     }
 
     public String Name() {
@@ -32,6 +29,9 @@ public class PredecessorLiftingStrategy implements ILiftingStrategy {
 
     public void Initialize(ParityGameSolver solver) {
         this.solver = solver;
+
+        queued = new boolean[parityGame.V.size()];
+        queue = new LinkedList<Integer>();
 
         for (Integer v : parityGame.V) {
             if (!solver.progressMeasures[v].Top()) {
@@ -42,7 +42,7 @@ public class PredecessorLiftingStrategy implements ILiftingStrategy {
     }
 
     public void Lifted(Integer v) {
-        List<Integer> edges = parityGame.E.inEdges(v);
+        List<Integer> edges = parityGame.E.outEdges(v);
         for (Integer w : edges) {
             if (!queued[w] && !solver.progressMeasures[w].Top()) {
                 queued[w] = true;

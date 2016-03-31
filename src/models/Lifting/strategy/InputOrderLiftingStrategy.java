@@ -29,7 +29,10 @@ public class InputOrderLiftingStrategy implements ILiftingStrategy {
     }
 
     public void Initialize(ParityGameSolver solver) {
+
         this.solver = solver;
+        num_failed = 0;
+        next_vertex = -1;
     }
 
     public void Lifted(Integer v) {
@@ -43,7 +46,7 @@ public class InputOrderLiftingStrategy implements ILiftingStrategy {
         } else {
             num_failed++;
             next_vertex = (next_vertex + 1) % parityGame.V.size();
-            return parityGame.V.get(next_vertex);
+            return next_vertex;
         }
     }
 }

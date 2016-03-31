@@ -1,12 +1,14 @@
 import interfaces.ILiftingStrategy;
+import models.*;
 import models.Lifting.strategy.*;
-import models.ParityGame;
-import models.ParityGameFactory;
-import models.ParityGameSolver;
 import org.antlr.v4.runtime.misc.OrderedHashSet;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 public class Main {
@@ -18,13 +20,25 @@ public class Main {
         String folder = "";
 
         // Do this one for a foler
-        args = new String[6];
-        args[0] = "-g";
-        args[1] = "res/elevator-games/elevator1_3.gm";
-        args[2] = "-i";
-        args[3] = "1";
+        args = new String[14];
+        args[0] = "-i";
+        args[1] = "1";
+        args[2] = "-g";
+        args[3] = "res/dining-games/dining_2.invariantly_plato_starves.gm";
         args[4] = "-s";
-        args[5] = "3";
+        args[5] = "0";
+        args[6] = "-s";
+        args[7] = "1";
+        args[8] = "-s";
+        args[9] = "2";
+        args[10] = "-s";
+        args[11] = "3";
+        args[12] = "-s";
+        args[13] = "4";
+
+        // dining_5.invariantly_plato_starves
+        //args[2] = "-t";
+        //args[3] = "res/dining-games/";
 
         Set<File> games = new OrderedHashSet<File>();
         Set<Integer> strategies = new OrderedHashSet<Integer>();
@@ -63,10 +77,11 @@ public class Main {
             }
 
             strategies.clear();
-            //strategies.add(0);
-            //strategies.add(1);
+            strategies.add(0);
+            strategies.add(1);
+            strategies.add(2);
             strategies.add(3);
-            //strategies.add(3);
+            strategies.add(4);
         }
 
         if (games.isEmpty()) {
@@ -75,11 +90,13 @@ public class Main {
         }
 
         ParityGame parityGame = null;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("[");
         for (File game : games) {
             System.out.printf("Read Parity Game: %s", game.getName());
             Long startTime = System.nanoTime();
-            //parityGame = PGSolverReader.ReadFile(game.toString());
-            parityGame = ParityGameFactory.CreateExample();
+            parityGame = PGSolverReader.ReadFile(game.toString());
+            // parityGame = ParityGameFactory.CreateExample();
             System.out.printf(" (%f ms) \n", (System.nanoTime() - startTime) / (float) 1000000);
 
             if (parityGame == null) {
@@ -108,19 +125,70 @@ public class Main {
                         break;
                 }
 
-                Long resultsum = 0L;
-                for (int i =0; i < iterations; i++) {
+                Long durationsum = 0L;
+                int iterationsum = 0;
+                Result result = null;
+                for (int i = 0; i < iterations; i++) {
                     solver = new ParityGameSolver(parityGame, liftingStrategy);
                     solver.print = true;
                     System.out.print(String.format("Evaluate: %12s - %s ", liftingStrategy.Name(), game.getName()));
-                    startTime = System.nanoTime();
-                    solver.Solve();
-                    Long difference = System.nanoTime() - startTime;
-                    resultsum += difference;
-                    System.out.printf("(%f ms) \n", (difference) / (float) 1000000);
+                    result = solver.Solve();
+                    System.out.printf("(%f ms) \n", (result.getDuration()) / (float) 1000000);
+
+                    durationsum += result.getDuration();
+                    iterationsum += result.getItterations();
+
+                    // Collect results
+                    result.odd = new LinkedList<Integer>();
+                    result.even = new LinkedList<Integer>();
+                    for (Integer r : parityGame.V) {
+                        if (solver.progressMeasures[r].Top()) {
+                            result.odd.add(r);
+                        } else {
+                            result.even.add(r);
+                        }
+                    }
+
+                    System.out.println(result.odd.toString());
                 }
-                System.out.printf("Average: %f ms \n", (resultsum / iterations) / (float) 100000);
-                System.out.println();
+                System.out.printf("Average: %f ms \n", (durationsum / iterations) / (float) 1000000);
+
+                // Collect results
+                result.odd = new LinkedList<Integer>();
+                result.even = new LinkedList<Integer>();
+                for (Integer r : parityGame.V) {
+                    if (solver.progressMeasures[r].Top()) {
+                        result.odd.add(r);
+                    } else {
+                        result.even.add(r);
+                    }
+                }
+
+                result.setItterations(iterationsum / iterations);
+                result.setDuration(durationsum / iterations);
+                result.setGame(game.getName());
+                stringBuilder.append(result.toJSON() + ",");
+            }
+        }
+
+
+
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        stringBuilder.append("]");
+
+        if (ptest) {
+            BufferedWriter writer = null;
+            try {
+                writer = new BufferedWriter(new FileWriter(folder + "result.json"));
+                writer.write(stringBuilder.toString());
+
+            } catch (IOException e) {
+            } finally {
+                try {
+                    if (writer != null)
+                        writer.close();
+                } catch (IOException e) {
+                }
             }
         }
     }

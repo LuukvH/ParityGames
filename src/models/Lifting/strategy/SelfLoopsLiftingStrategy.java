@@ -20,8 +20,6 @@ public class SelfLoopsLiftingStrategy implements ILiftingStrategy {
 
     public SelfLoopsLiftingStrategy(ParityGame parityGame) {
         this.parityGame = parityGame;
-        queued = new boolean[parityGame.V.size()];
-        queue = new LinkedList<Integer>();
     }
 
     public String Name() {
@@ -30,6 +28,11 @@ public class SelfLoopsLiftingStrategy implements ILiftingStrategy {
 
     public void Initialize(ParityGameSolver solver) {
         this.solver = solver;
+
+        queued = new boolean[parityGame.V.size()];
+        queue = new LinkedList<Integer>();
+        num_failed = 0;
+        lifted = true;
 
         // Add all edges with self loops
         for (Integer v : parityGame.V) {

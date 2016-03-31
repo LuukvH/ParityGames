@@ -27,7 +27,9 @@ public class RandomLiftingStrategy implements ILiftingStrategy {
 
     public void Initialize(ParityGameSolver solver) {
         this.solver = solver;
+
         queue = getRandomSet();
+        num_failed = 0;
     }
 
     private Queue<Integer> getRandomSet() {
