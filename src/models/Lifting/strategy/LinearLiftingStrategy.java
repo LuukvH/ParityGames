@@ -34,12 +34,12 @@ public class LinearLiftingStrategy implements ILiftingStrategy {
     }
 
     public int Next() {
-        if (num_failed > parityGame.V.size() * 10) {
+        if (num_failed > parityGame.V.length) {
             return -1;
         } else {
             num_failed++;
-            next_vertex = (next_vertex + 1) % parityGame.V.size();
-            return parityGame.V.get(next_vertex);
+            next_vertex = (next_vertex + 1) % parityGame.V.length;
+            return parityGame.V[next_vertex];
         }
     }
 }

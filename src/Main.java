@@ -16,18 +16,18 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         Boolean ptest = false;
+        boolean verbose = false;
         int iterations = 1;
         String folder = "";
 
         // Do this one for a foler
-        args = new String[14];
+        args = new String[4];
         args[0] = "-i";
-        args[1] = "1";
-        args[2] = "-g";
-        args[3] = "res/dining-games/dining_2.invariantly_plato_starves.gm";
-        args[4] = "-s";
-        args[5] = "0";
-        args[6] = "-s";
+        args[1] = "2";
+        args[2] = "-t";
+        args[3] = "res/dining-games/"; // dining-games/dining_2.invariantly_plato_starves.gm";
+        //args[6] = "-s";
+        /*
         args[7] = "1";
         args[8] = "-s";
         args[9] = "2";
@@ -35,7 +35,7 @@ public class Main {
         args[11] = "3";
         args[12] = "-s";
         args[13] = "4";
-
+*/
         // dining_5.invariantly_plato_starves
         //args[2] = "-t";
         //args[3] = "res/dining-games/";
@@ -96,7 +96,7 @@ public class Main {
             System.out.printf("Read Parity Game: %s", game.getName());
             Long startTime = System.nanoTime();
             parityGame = PGSolverReader.ReadFile(game.toString());
-            // parityGame = ParityGameFactory.CreateExample();
+            //parityGame = ParityGameFactory.CreateExample();
             System.out.printf(" (%f ms) \n", (System.nanoTime() - startTime) / (float) 1000000);
 
             if (parityGame == null) {
@@ -130,7 +130,7 @@ public class Main {
                 Result result = null;
                 for (int i = 0; i < iterations; i++) {
                     solver = new ParityGameSolver(parityGame, liftingStrategy);
-                    solver.print = true;
+                    solver.print = false;
                     System.out.print(String.format("Evaluate: %12s - %s ", liftingStrategy.Name(), game.getName()));
                     result = solver.Solve();
                     System.out.printf("(%f ms) \n", (result.getDuration()) / (float) 1000000);
@@ -149,7 +149,8 @@ public class Main {
                         }
                     }
 
-                    System.out.println(result.odd.toString());
+                    if (verbose)
+                        System.out.println(result.odd.toString());
                 }
                 System.out.printf("Average: %f ms \n", (durationsum / iterations) / (float) 1000000);
 
@@ -170,8 +171,6 @@ public class Main {
                 stringBuilder.append(result.toJSON() + ",");
             }
         }
-
-
 
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         stringBuilder.append("]");

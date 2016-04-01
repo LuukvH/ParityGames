@@ -1,123 +1,502 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<style>
+<head>
+    <meta charset="utf-8">
 
-    body {
-        font: 10px sans-serif;
-    }
+    <!--Import Google Icon Font-->
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection"/>
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-    .axis path,
-    .axis line {
-        fill: none;
-        stroke: #000;
-        shape-rendering: crispEdges;
-    }
+    <script src="js/d3.min.js"></script>
+    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 
-    .bar {
-        fill: steelblue;
-    }
+    <script>
+        function getStrategies(data) {
+            var strategies = [];
+            for (var i = 0; i < data.length; i++) {
+                var found = false;
 
-    .x.axis path {
-        display: none;
-    }
+                for (var n = 0; n < strategies.length; n++) {
+                    if (data[i].strategy == strategies[n]) {
+                        found = true;
+                    }
+                }
 
-</style>
-<body>
-<script src="//d3js.org/d3.v3.min.js"></script>
+                if (!found) {
+                    strategies.push(data[i].strategy);
+                }
+            }
+            return strategies;
+        }
+
+        function getGames(data) {
+            var games = [];
+            for (var i = 0; i < data.length; i++) {
+                var found = false;
+
+                for (var n = 0; n < games.length; n++) {
+                    if (data[i].game == games[n]) {
+                        found = true;
+                    }
+                }
+
+                if (!found) {
+                    games.push(data[i].game);
+                }
+            }
+            return games;
+        }
+
+        function fillIterationTable(data) {
+            var strategies = getStrategies(data);
+            var games = getGames(data);
+
+            var divtable = document.getElementById('iteration_table');
+            var table = document.createElement('table');
+            var thead = document.createElement('thead');
+            var tr = document.createElement('tr');
+
+            while (divtable.hasChildNodes()) {
+                divtable.removeChild(divtable.lastChild);
+            }
+
+            tr.appendChild(document.createElement('th'));
+            thead.appendChild(tr);
+            table.appendChild(thead);
+
+            // Header
+            for (var i = 0; i < strategies.length; i++) {
+                var th = document.createElement('th');
+                th.appendChild(document.createTextNode(strategies[i]));
+                th.setAttribute('style', 'text-align: right');
+                tr.appendChild(th);
+            }
+
+            var tbody = document.createElement('tbody');
+            table.appendChild(tbody);
+
+            // Content
+            for (var n = 0; n < games.length; n++) {
+                tr = document.createElement('tr');
+                td = document.createElement('td');
+                td.appendChild(document.createTextNode(games[n]));
+                tr.appendChild(td);
+                for (var i = 0; i < strategies.length; i++) {
+                    var value = data.filter(function(d){return d.game == games[n] && d.strategy == strategies[i]; })[0].iterations;
+                    td = document.createElement('td');
+                    td.appendChild(document.createTextNode(value));
+                    td.setAttribute('style', 'text-align: right');
+                    tr.appendChild(td);
+                }
+
+                tbody.appendChild(tr);
+            }
+
+            table.setAttribute('class', 'striped');
+            divtable.appendChild(table);
+        }
+
+        function fillResultsTable(data) {
+            var strategies = getStrategies(data);
+            var games = getGames(data);
+
+            var divtable = document.getElementById('result_table');
+            var table = document.createElement('table');
+            var thead = document.createElement('thead');
+            var tr = document.createElement('tr');
+
+            while (divtable.hasChildNodes()) {
+                divtable.removeChild(divtable.lastChild);
+            }
+
+            tr.appendChild(document.createElement('th'));
+            thead.appendChild(tr);
+            table.appendChild(thead);
+
+            var th = document.createElement('th');
+                th.appendChild(document.createTextNode('Result (odd)'));
+                th.setAttribute('style', 'text-align: center');
+                tr.appendChild(th);
+
+            var tbody = document.createElement('tbody');
+            table.appendChild(tbody);
+
+            // Content
+            for (var n = 0; n < games.length; n++) {
+                tr = document.createElement('tr');
+                tbody.appendChild(tr);
+
+                td = document.createElement('td');
+                b = document.createElement('b');
+                td.appendChild(b);
+                b.appendChild(document.createTextNode(games[n]));
+                td.setAttribute('style', 'vertical-align:top');
+                tr.appendChild(td);
+
+                td = document.createElement('td');
+                tr.appendChild(td);
+
+                var innerTable = document.createElement('table');
+                var innerTbody = document.createElement('tbody');
+                td.appendChild(innerTable);
+                innerTable.appendChild(innerTbody);
+
+                for (var i = 0; i < strategies.length; i++) {
+                    tr = document.createElement('tr');
+                    innerTbody.appendChild(tr);
+
+                    var value = data.filter(function(d){return d.game == games[n] && d.strategy == strategies[i]; })[0].odd;
+
+                    td = document.createElement('td');
+                    td.appendChild(document.createTextNode(strategies[i]));
+                    tr.appendChild(td);
+
+                    td = document.createElement('td');
+                    td.appendChild(document.createTextNode(String(value).replace(/,/g, ', ')));
+                    td.setAttribute('style', 'text-align: right');
+                    tr.appendChild(td);
+                }
+            }
+
+            table.setAttribute('class', 'striped');
+            divtable.appendChild(table);
+        }
+
+        function fillPerformanceTable(data) {
+            var strategies = getStrategies(data);
+            var games = getGames(data);
+
+            var divtable = document.getElementById('timing_table');
+            var table = document.createElement('table');
+            var thead = document.createElement('thead');
+            var tr = document.createElement('tr');
+
+            while (divtable.hasChildNodes()) {
+                divtable.removeChild(divtable.lastChild);
+            }
+
+            tr.appendChild(document.createElement('th'));
+            thead.appendChild(tr);
+            table.appendChild(thead);
+
+            // Header
+            for (var i = 0; i < strategies.length; i++) {
+                var th = document.createElement('th');
+                th.appendChild(document.createTextNode(strategies[i]));
+                th.setAttribute('style', 'text-align: right');
+                tr.appendChild(th);
+            }
+
+            var tbody = document.createElement('tbody');
+            table.appendChild(tbody);
+
+            // Content
+            for (var n = 0; n < games.length; n++) {
+                tr = document.createElement('tr');
+                var td = document.createElement('td');
+                td.appendChild(document.createTextNode(games[n]));
+                tr.appendChild(td);
+                for (var i = 0; i < strategies.length; i++) {
+                    var value = data.filter(function(d){return d.game == games[n] && d.strategy == strategies[i]; })[0].duration / 100000;
+                    td = document.createElement('td');
+                    td.appendChild(document.createTextNode(value.toFixed(4) + " ms"));
+                    td.setAttribute('style', 'text-align: right');
+                    tr.appendChild(td);
+                }
+
+                tbody.appendChild(tr);
+            }
+
+            table.setAttribute('class', 'striped');
+            divtable.appendChild(table);
+        }
+
+        function generateCheckBoxes(data) {
+
+            var games = getGames(data);
+            var selectionForm = document.getElementById('selectionForm');
+
+            // Clear all children
+            while (selectionForm.hasChildNodes()) {
+                selectionForm.removeChild(selectionForm.lastChild);
+            }
+
+            for (var i = 0; i < games.length; i++)
+            {
+                var p = document.createElement('p');
+                selectionForm.appendChild(p);
+
+                var input = document.createElement('input');
+                input.setAttribute('type', 'checkbox');
+                input.setAttribute('id', games[i]);
+                input.setAttribute('checked', 'checked');
+                input.onclick = chkChanged;
+                p.appendChild(input);
+
+                var label = document.createElement('label');
+                label.setAttribute('for', games[i]);
+                label.appendChild(document.createTextNode(games[i]));
+                p.appendChild(label);
+            }
+
+            function getCheckedBoxes() {
+                var checkboxes = document.getElementById('selectionForm').getElementsByTagName('input');
+                console.log(checkboxes);
+                var checkboxesChecked = [];
+                // loop over them all
+                for (var i=0; i<checkboxes.length; i++) {
+                    // And stick the checked ones onto an array...
+                    if (checkboxes[i].checked) {
+                        checkboxesChecked.push(checkboxes[i].id);
+                    }
+                }
+
+                console.log(checkboxesChecked);
+                // Return the array if it is non-empty, or null
+                return checkboxesChecked.length > 0 ? checkboxesChecked : null;
+            }
+            function chkChanged() {
+                var checked = getCheckedBoxes();
+
+                //console.log('fdg');
+            }
+
+        }
+    </script>
+
+    <style>
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .d3-tip {
+            line-height: 1;
+            font-weight: bold;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            border-radius: 2px;
+        }
+
+        /* Creates a small triangle extender for the tooltip */
+        .d3-tip:after {
+            box-sizing: border-box;
+            display: inline;
+            font-size: 10px;
+            width: 100%;
+            line-height: 1;
+            color: rgba(0, 0, 0, 0.8);
+            content: "\25BC";
+            position: absolute;
+            text-align: center;
+        }
+
+        /* Style northward tooltips differently */
+        .d3-tip.n:after {
+            margin: -1px 0 0 0;
+            top: 100%;
+            left: 0;
+        }
+    </style>
+
+</head>
+<body onresize="graphResize()">
+<!--Import jQuery before materialize.js-->
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="js/materialize.min.js"></script>
+
+<nav class="blue darken-1">
+    <div class="container nav-wrapper">
+        <a href="#" class="brand-logo">Parity Game Dashboard</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <!--<li><a href="sass.html">Sass</a></li>
+            <li><a href="badges.html">Components</a></li>
+            <li><a href="collapsible.html">JavaScript</a></li>-->
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <form id="selectionForm" action="#">
+        <p>
+            <input type="checkbox" id="test6" checked="checked" />
+            <label for="test6">Yellow</label>
+        </p>
+    </form>
+
+    <div id="d3measure" class="center-align">
+        <svg id="graph"/>
+    </div>
+
+    <h3 class="blue-text text-darken-1">Itterations</h3>
+    <div id="iteration_table" class="striped" style="margin-top: 20px">
+
+    </div>
+
+    <h3 class="blue-text text-darken-1">Performance</h3>
+    <div id="timing_table" class="striped" style="margin-top: 20px">
+
+    </div>
+
+    <h3 class="blue-text text-darken-1">Results</h3>
+    <div id="result_table" class="striped" style="margin-top: 20px">
+
+    </div>
+
+</div>
+
 <script>
 
-    var margin = {top: 20, right: 20, bottom: 30, left: 40},
-            width = 960 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+    function graphResize() {
+        var mwidth = document.getElementById('d3measure').clientWidth;
+        var mheight = (mwidth / 16) * 9;
 
-    var x0 = d3.scale.ordinal()
-            .rangeRoundBands([0, width], .1);
+        var margin = {top: 20, right: 20, bottom: 200, left: 40},
+                width = mwidth - margin.left - margin.right,
+                height = mheight - margin.top - margin.bottom;
 
-    var x1 = d3.scale.ordinal();
+        var x0 = d3.scale.ordinal()
+                .rangeRoundBands([0, width], .1);
 
-    var y = d3.scale.linear()
-            .range([height, 0]);
+        var x1 = d3.scale.ordinal();
 
-    var color = d3.scale.ordinal()
-            .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+        var y = d3.scale.pow().exponent(0.5)
+                .range([height, 0]);
 
-    var xAxis = d3.svg.axis()
-            .scale(x0)
-            .orient("bottom");
+        var color = d3.scale.category10();
 
-    var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left")
-            .tickFormat(d3.format(".2s"));
+        //var color = d3.scale.ordinal()
+        //        .range(["#d7191c", "#fdae61", "#ffffbf", "#abd9e9", "#2c7bb6"]);
 
-    var svg = d3.select("body").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        var xAxis = d3.svg.axis()
+                .scale(x0)
+                .orient("bottom");
 
-    d3.csv("data.csv", function(error, data) {
-        if (error) throw error;
+        var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left")
+                .tickFormat(d3.format(".2s"));
 
-        var ageNames = d3.keys(data[0]).filter(function(key) { return key !== "State"; });
+        var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0])
+                .html(function(d) {
+                    return "<strong>Iterations:</strong> <span style='color:red'>" + d.iterations + "</span>";
+                })
 
-        data.forEach(function(d) {
-            d.ages = ageNames.map(function(name) { return {name: name, value: +d[name]}; });
+        var svg = d3.select("#graph")
+                .selectAll("*").remove();
+
+        var svg = d3.select("#graph")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        svg.call(tip);
+
+        d3.json("result.json", function (error, data) {
+            if (error) throw error;
+
+            fillIterationTable(data);
+            fillPerformanceTable(data);
+            fillResultsTable(data);
+            generateCheckBoxes(data);
+
+            var strategies = getStrategies(data);
+            var games = getGames(data);
+
+            x0.domain(games);
+            x1.domain(strategies).rangeRoundBands([0, x0.rangeBand()]);
+            y.domain([0, d3.max(data, function (d) {
+                return d.iterations;
+            })]);
+
+            svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(xAxis)
+                    .selectAll("text")
+                    .style("text-anchor", "end")
+                    .attr("dx", "-.8em")
+                    .attr("dy", ".15em")
+                    .attr("transform", "rotate(-65)");
+
+            svg.append("g")
+                    .attr("class", "y axis")
+                    .call(yAxis)
+                    .append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 6)
+                    .attr("dy", ".71em")
+                    .style("text-anchor", "end")
+                    .text("Iterations");
+
+            var state = svg.selectAll(".state")
+                    .data(games)
+                    .enter().append("g")
+                    .attr("class", "state")
+                    .attr("transform", function (d) {
+                        return "translate(" + x0(d) + ",0)";
+                    });
+
+            state.selectAll("rect")
+                    .data(function (d) {
+                                var game = d;
+                                return data.filter(function (d) {
+                                    return d.game == game;
+                                })
+                            }
+                    )
+                    .enter().append("rect")
+                    .attr("width", x1.rangeBand())
+                    .attr("x", function (d) {
+                        return x1(d.strategy);
+                    })
+                    .attr("y", function (d) {
+                        return y(d.iterations);
+                    })
+                    .attr("height", function (d) {
+                        return height - y(d.iterations);
+                    })
+                    .style("fill", function (d) {
+                        return color(d.strategy);
+                    })
+                    .on('mouseover', tip.show)
+                    .on('mouseout', tip.hide);
+
+            var legend = svg.selectAll(".legend")
+                    .data(strategies.slice().reverse())
+                    .enter().append("g")
+                    .attr("class", "legend")
+                    .attr("transform", function (d, i) {
+                        return "translate(0," + i * 20 + ")";
+                    });
+
+            legend.append("rect")
+                    .attr("x", 30)
+                    .attr("width", 18)
+                    .attr("height", 18)
+                    .style("fill", color);
+
+            legend.append("text")
+                    .attr("x", 50)
+                    .attr("y", 9)
+                    .attr("dy", ".35em")
+                    .style("text-anchor", "start")
+                    .text(function (d) {
+                        return d;
+                    });
         });
+    }
 
-        x0.domain(data.map(function(d) { return d.State; }));
-        x1.domain(ageNames).rangeRoundBands([0, x0.rangeBand()]);
-        y.domain([0, d3.max(data, function(d) { return d3.max(d.ages, function(d) { return d.value; }); })]);
-
-        svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis);
-
-        svg.append("g")
-                .attr("class", "y axis")
-                .call(yAxis)
-                .append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", ".71em")
-                .style("text-anchor", "end")
-                .text("Population");
-
-        var state = svg.selectAll(".state")
-                .data(data)
-                .enter().append("g")
-                .attr("class", "state")
-                .attr("transform", function(d) { return "translate(" + x0(d.State) + ",0)"; });
-
-        state.selectAll("rect")
-                .data(function(d) { return d.ages; })
-                .enter().append("rect")
-                .attr("width", x1.rangeBand())
-                .attr("x", function(d) { return x1(d.name); })
-                .attr("y", function(d) { return y(d.value); })
-                .attr("height", function(d) { return height - y(d.value); })
-                .style("fill", function(d) { return color(d.name); });
-
-        var legend = svg.selectAll(".legend")
-                .data(ageNames.slice().reverse())
-                .enter().append("g")
-                .attr("class", "legend")
-                .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
-
-        legend.append("rect")
-                .attr("x", width - 18)
-                .attr("width", 18)
-                .attr("height", 18)
-                .style("fill", color);
-
-        legend.append("text")
-                .attr("x", width - 24)
-                .attr("y", 9)
-                .attr("dy", ".35em")
-                .style("text-anchor", "end")
-                .text(function(d) { return d; });
-
-    });
+    graphResize();
 
 </script>
+</body>

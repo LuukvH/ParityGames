@@ -24,25 +24,23 @@ public class PredecessorLiftingStrategy implements ILiftingStrategy {
     }
 
     public String Name() {
-        return "Predecessor Lifting Strategy";
+        return "Predecessor Lifting";
     }
 
     public void Initialize(ParityGameSolver solver) {
         this.solver = solver;
 
-        queued = new boolean[parityGame.V.size()];
+        queued = new boolean[parityGame.V.length];
         queue = new LinkedList<Integer>();
 
         for (Integer v : parityGame.V) {
-            if (!solver.progressMeasures[v].Top()) {
-                queued[v] = true;
-                queue.add(v);
-            }
+            queued[v] = true;
+            queue.add(v);
         }
     }
 
     public void Lifted(Integer v) {
-        List<Integer> edges = parityGame.E.outEdges(v);
+        List<Integer> edges = parityGame.E.inEdges(v);
         for (Integer w : edges) {
             if (!queued[w] && !solver.progressMeasures[w].Top()) {
                 queued[w] = true;

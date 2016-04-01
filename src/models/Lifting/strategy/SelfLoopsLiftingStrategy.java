@@ -23,13 +23,13 @@ public class SelfLoopsLiftingStrategy implements ILiftingStrategy {
     }
 
     public String Name() {
-        return "Self Loops Lifting Strategy";
+        return "Self Loops Lifting";
     }
 
     public void Initialize(ParityGameSolver solver) {
         this.solver = solver;
 
-        queued = new boolean[parityGame.V.size()];
+        queued = new boolean[parityGame.V.length];
         queue = new LinkedList<Integer>();
         num_failed = 0;
         lifted = true;
@@ -57,7 +57,7 @@ public class SelfLoopsLiftingStrategy implements ILiftingStrategy {
     }
 
     public int Next() {
-        if (num_failed >= queue.size())
+        if (num_failed >= parityGame.V.length)
             return -1;
 
         num_failed++;
@@ -67,6 +67,10 @@ public class SelfLoopsLiftingStrategy implements ILiftingStrategy {
             if (!solver.progressMeasures[v].Top()) {
                 queue.add(v);
             }
+        }
+
+        if (queue.isEmpty()) {
+            return -1;
         }
 
         lifted = false;

@@ -13,9 +13,10 @@ import java.util.*;
 public class RandomLiftingStrategy implements ILiftingStrategy {
 
     private ParityGame parityGame;
-    private Queue<Integer> queue;
+    private int[] queue;
     private ParityGameSolver solver;
     private Integer num_failed = 0;
+    private Integer index = 0;
 
     public RandomLiftingStrategy(ParityGame parityGame) {
         this.parityGame = parityGame;
@@ -28,23 +29,28 @@ public class RandomLiftingStrategy implements ILiftingStrategy {
     public void Initialize(ParityGameSolver solver) {
         this.solver = solver;
 
-        queue = getRandomSet();
+        CalculateRandomSet();
         num_failed = 0;
     }
 
-    private Queue<Integer> getRandomSet() {
-        List<Integer> vertices = new ArrayList<Integer>(parityGame.V);
+    private void CalculateRandomSet() {
+        List<Integer> vertices = new ArrayList<Integer>(parityGame.V.length);
         Random random = new Random();
-        Queue<Integer> queue = new LinkedList<Integer>();
+        queue = new int[parityGame.V.length];
 
+        for (int index = 0; index < parityGame.V.length; index++)
+        {
+            vertices.add(parityGame.V[index]);
+        }
+
+        int i = 0;
         while (!vertices.isEmpty()) {
             Integer index = random.nextInt(vertices.size());
             Integer v = vertices.get(index);
-            if (!solver.progressMeasures[v].Top())
-                queue.add(v);
+            queue[i] = v;
             vertices.remove(v);
+            i++;
         };
-        return queue;
     }
 
     public void Lifted(Integer v) {
@@ -52,19 +58,17 @@ public class RandomLiftingStrategy implements ILiftingStrategy {
     }
 
     public int Next() {
-        if (queue.isEmpty()) {
-            queue = getRandomSet();
-
-            if (queue.isEmpty())
-                return -1;
-        }
-
-        if (num_failed >= parityGame.V.size()) {
+        if (num_failed >= parityGame.V.length) {
             return -1;
         }
 
+        index++;
         num_failed++;
 
-        return queue.remove();
+        if (index >= queue.length) {
+            index = 0;
+        }
+
+        return queue[index];
     }
 }

@@ -48,7 +48,7 @@ public class PGSolverReader {
             {
                 lineInfo = line.split(" ");
                 int vertex = Integer.parseInt(lineInfo[0]);
-                parityGame.V.add(vertex);
+                parityGame.V[vertex] = vertex;
 
                 int prio = Integer.parseInt(lineInfo[1]);
                 parityGame.p[vertex] = prio;
@@ -57,7 +57,7 @@ public class PGSolverReader {
                     maxPriority = prio;
                 }
 
-                parityGame.player[vertex] = lineInfo[2].contains("1");
+                parityGame.player[vertex] = !lineInfo[2].contains("1");
 
                 String[] successors = lineInfo[3].split(",");
 
