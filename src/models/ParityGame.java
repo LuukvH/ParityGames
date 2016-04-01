@@ -21,7 +21,7 @@ import java.util.*;
 public class ParityGame {
     private int maxvalue;
 
-    public List<Integer> V;
+    public int[] V;
     public IAdjacencyList E;
     public int[] p;
     public Boolean[] player; // Even = true, Odd = false (hopefully!!!)
@@ -31,7 +31,7 @@ public class ParityGame {
     public ParityGame(int maxvalue) {
         this.maxvalue = maxvalue;
 
-        V = new ArrayList<Integer>(maxvalue);
+        V = new int[maxvalue];
         E = new DoubleAdjacencyList(maxvalue);
         p = new int[maxvalue];
         player = new Boolean[maxvalue];
@@ -54,11 +54,11 @@ public class ParityGame {
 
         // For every node
         stringBuilder.append("[");
-        for(int i = 0; i < V.size(); i++) {
+        for(int i = 0; i < V.length; i++) {
             // Get all outgoing transitions
-            List<Integer> edges = E.outEdges(V.get(i));
+            List<Integer> edges = E.outEdges(V[i]);
             for (int e = 0; e<edges.size(); e++) {
-                stringBuilder.append(String.format("{\"source\": %d, \"target\": %d, \"sign\": \"%s\", \"priority\": %d},", V.get(i), edges.get(e), player[V.get(i)] ? "even" : "odd", p[V.get(i)] ));
+                stringBuilder.append(String.format("{\"source\": %d, \"target\": %d, \"sign\": \"%s\", \"priority\": %d},", V[i], edges.get(e), player[i] ? "even" : "odd", p[V[i]] ));
             }
         }
         stringBuilder.deleteCharAt(stringBuilder.length()-1);

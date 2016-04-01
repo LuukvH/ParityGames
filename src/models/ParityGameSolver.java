@@ -7,6 +7,7 @@ import models.ProgressMeasure.MaxProgressMeasureFactory;
 import models.ProgressMeasure.ProgressMeasure;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -25,17 +26,17 @@ public class ParityGameSolver {
         this.liftingStrategy = liftingStrategy;
 
         Initialize();
-
-        this.liftingStrategy.Initialize(this);
     }
 
     private void Initialize() {
         maxProgressMeasure = MaxProgressMeasureFactory.Create(parityGame);
-        progressMeasures = new ProgressMeasure[parityGame.V.size()];
+        progressMeasures = new ProgressMeasure[parityGame.V.length];
 
-        for  (int i =0; i< parityGame.V.size(); i++) {
+        for  (int i =0; i< parityGame.V.length; i++) {
             progressMeasures[i] = new ProgressMeasure(parityGame.getMaxPriority());
         }
+
+        this.liftingStrategy.Initialize(this);
     }
 
     public BaseProgressMeasure getMaxProgressMeasure() {
@@ -56,6 +57,7 @@ public class ParityGameSolver {
     private ProgressMeasure Max(List<ProgressMeasure> progressmeasures, int priority) {
 
         ProgressMeasure max = progressmeasures.get(0);
+
         for (int i = 0; i < progressmeasures.size(); i++) {
             if (BaseProgressMeasure.Compare(progressmeasures.get(i), max, priority) == -1) {
                 max = progressmeasures.get(i);
@@ -65,6 +67,7 @@ public class ParityGameSolver {
     }
 
     private ProgressMeasure Prog(int v, int w, int priority) {
+
 
         ProgressMeasure pm2 = progressMeasures[w];
         BaseProgressMeasure pm = pm2.Increase(maxProgressMeasure, priority);
@@ -89,33 +92,40 @@ public class ParityGameSolver {
         }
     }
 
-    public void Solve() {
+    public Result Solve() {
+        Long startTime = System.nanoTime();
+
         int i = 0;
         int v;
 
         while((v = liftingStrategy.Next()) != -1) {
             ProgressMeasure lift = Lift(v);
 
-            if (!Lift(v).Equals(progressMeasures[v], parityGame.p[v])) {
+            if (print)
+                System.out.println(String.format("Lifting: %d", v));
+
+            if (BaseProgressMeasure.Compare(progressMeasures[v], lift, parityGame.p[v]) == 1) {
                 liftingStrategy.Lifted(v);
-                progressMeasures[v] = lift;
-            } else {
                 progressMeasures[v] = lift;
             }
 
             i++;
 
-
-            System.out.println(toString(i));
+            if (print)
+                System.out.println(toString(i));
         }
-        System.out.printf(", Nr of itterations: %d, ", i);
 
+        // Generate results
+        Long duration = System.nanoTime() - startTime;
+        Result result = new Result(liftingStrategy.Name(), i, duration);
+
+        return result;
     }
 
     public String toString(int itter) {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("---- Itteration %d ---- \n", itter));
-        for (int i = 0; i < parityGame.V.size(); i++) {
+        for (int i = 0; i < parityGame.V.length; i++) {
             sb.append(String.format("%s \n", progressMeasures[i].toTopString()));
         }
         return sb.toString();
