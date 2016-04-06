@@ -96,9 +96,7 @@ public abstract class BaseProgressMeasure implements IProgressMeasure {
 
         if(p1.Top() && p2.Top()) {
             return 0;
-        }
-        else
-        {
+        } else {
             if(p1.Top()) return -1;
             if(p2.Top()) return 1;
         }

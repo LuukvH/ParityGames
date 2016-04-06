@@ -99,6 +99,11 @@ public class ParityGameSolver {
         int v;
 
         while((v = liftingStrategy.Next()) != -1) {
+            i++;
+
+            if (progressMeasures[v].Top())
+                continue;
+
             ProgressMeasure lift = Lift(v);
 
             if (print)
@@ -108,8 +113,6 @@ public class ParityGameSolver {
                 liftingStrategy.Lifted(v);
                 progressMeasures[v] = lift;
             }
-
-            i++;
 
             if (print)
                 System.out.println(toString(i));

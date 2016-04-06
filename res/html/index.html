@@ -13,6 +13,83 @@
     <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 
     <script>
+
+        function fillStatistics(data) {
+            var divtable = document.getElementById('statistics_table');
+            var table = document.createElement('table');
+            var thead = document.createElement('thead');
+            var tr = document.createElement('tr');
+
+            while (divtable.hasChildNodes()) {
+                divtable.removeChild(divtable.lastChild);
+            }
+
+			/*
+            data.sort(function(a, b){
+                if(a.name < b.name) return -1;
+                if(a.name > b.name) return 1;
+                return 0;
+            });
+			*/
+
+            //tr.appendChild(document.createElement('th'));
+            thead.appendChild(tr);
+            table.appendChild(thead);
+
+            // Header
+            var header = ["Game", "Vertices", "Edges", "Min Degree", "Max Degree", "Average Degree", "Self Loops"];
+            var th = document.createElement('th');
+            th.appendChild(document.createTextNode(header[0]));
+            tr.appendChild(th);
+            for (var i = 1; i < header.length; i++) {
+                var th = document.createElement('th');
+                th.appendChild(document.createTextNode(header[i]));
+                th.setAttribute('style', 'text-align: right');
+                tr.appendChild(th);
+            }
+
+            var tbody = document.createElement('tbody');
+            table.appendChild(tbody);
+
+            console.log(data);
+
+            // Content
+            for (var n = 0; n < data.length; n++) {
+                tr = document.createElement('tr');
+                td = document.createElement('td');
+                td.appendChild(document.createTextNode(data[n].name));
+                tr.appendChild(td);
+                td = document.createElement('td');
+                td.appendChild(document.createTextNode(data[n].vertices));
+                td.setAttribute('style', 'text-align: right');
+                tr.appendChild(td);
+                td = document.createElement('td');
+                td.appendChild(document.createTextNode(data[n].edges));
+                td.setAttribute('style', 'text-align: right');
+                tr.appendChild(td);
+                td = document.createElement('td');
+                td.appendChild(document.createTextNode(data[n].mindegree));
+                td.setAttribute('style', 'text-align: right');
+                tr.appendChild(td);
+                td = document.createElement('td');
+                td.appendChild(document.createTextNode(data[n].maxdegree));
+                td.setAttribute('style', 'text-align: right');
+                tr.appendChild(td);
+                td = document.createElement('td');
+                td.appendChild(document.createTextNode(data[n].avgdegree));
+                td.setAttribute('style', 'text-align: right');
+                tr.appendChild(td);
+				td = document.createElement('td');
+                td.appendChild(document.createTextNode(data[n].selfloops));
+                td.setAttribute('style', 'text-align: right');
+                tr.appendChild(td);
+                tbody.appendChild(tr);
+            }
+
+            table.setAttribute('class', 'striped');
+            divtable.appendChild(table);
+        }
+
         function getStrategies(data) {
             var strategies = [];
             for (var i = 0; i < data.length; i++) {
@@ -46,10 +123,20 @@
                     games.push(data[i].game);
                 }
             }
+
+			/*
+            games.sort(function(a, b){
+                if(a < b) return -1;
+                if(a > b) return 1;
+                return 0;
+            })
+			*/
+
             return games;
         }
 
         function fillIterationTable(data) {
+
             var strategies = getStrategies(data);
             var games = getGames(data);
 
@@ -84,7 +171,9 @@
                 td.appendChild(document.createTextNode(games[n]));
                 tr.appendChild(td);
                 for (var i = 0; i < strategies.length; i++) {
-                    var value = data.filter(function(d){return d.game == games[n] && d.strategy == strategies[i]; })[0].iterations;
+                    var value = data.filter(function (d) {
+                        return d.game == games[n] && d.strategy == strategies[i];
+                    })[0].iterations;
                     td = document.createElement('td');
                     td.appendChild(document.createTextNode(value));
                     td.setAttribute('style', 'text-align: right');
@@ -116,9 +205,9 @@
             table.appendChild(thead);
 
             var th = document.createElement('th');
-                th.appendChild(document.createTextNode('Result (odd)'));
-                th.setAttribute('style', 'text-align: center');
-                tr.appendChild(th);
+            th.appendChild(document.createTextNode('Result (odd)'));
+            th.setAttribute('style', 'text-align: center');
+            tr.appendChild(th);
 
             var tbody = document.createElement('tbody');
             table.appendChild(tbody);
@@ -147,7 +236,9 @@
                     tr = document.createElement('tr');
                     innerTbody.appendChild(tr);
 
-                    var value = data.filter(function(d){return d.game == games[n] && d.strategy == strategies[i]; })[0].odd;
+                    var value = data.filter(function (d) {
+                        return d.game == games[n] && d.strategy == strategies[i];
+                    })[0].odd;
 
                     td = document.createElement('td');
                     td.appendChild(document.createTextNode(strategies[i]));
@@ -199,7 +290,9 @@
                 td.appendChild(document.createTextNode(games[n]));
                 tr.appendChild(td);
                 for (var i = 0; i < strategies.length; i++) {
-                    var value = data.filter(function(d){return d.game == games[n] && d.strategy == strategies[i]; })[0].duration / 100000;
+                    var value = data.filter(function (d) {
+                                return d.game == games[n] && d.strategy == strategies[i];
+                            })[0].duration / 100000;
                     td = document.createElement('td');
                     td.appendChild(document.createTextNode(value.toFixed(4) + " ms"));
                     td.setAttribute('style', 'text-align: right');
@@ -216,17 +309,35 @@
         function generateCheckBoxes(data) {
 
             var games = getGames(data);
-            var selectionForm = document.getElementById('selectionForm');
+            var sel1 = document.getElementById('sel1');
+            var sel2 = document.getElementById('sel2');
+            var sel3 = document.getElementById('sel3');
 
             // Clear all children
-            while (selectionForm.hasChildNodes()) {
-                selectionForm.removeChild(selectionForm.lastChild);
+            while (sel1.hasChildNodes()) {
+                sel1.removeChild(sel1.lastChild);
+            }
+            while (sel2.hasChildNodes()) {
+                sel2.removeChild(sel2.lastChild);
+            }
+            while (sel3.hasChildNodes()) {
+                sel3.removeChild(sel3.lastChild);
             }
 
-            for (var i = 0; i < games.length; i++)
-            {
+            var bucket = 1;
+            for (var i = 0; i < games.length; i++) {
                 var p = document.createElement('p');
-                selectionForm.appendChild(p);
+
+                if (bucket == 1) {
+                    sel1.appendChild(p);
+                } else if (bucket == 2) {
+                    sel2.appendChild(p);
+                } else {
+                    sel3.appendChild(p);
+                    bucket = 0;
+                }
+
+                bucket++;
 
                 var input = document.createElement('input');
                 input.setAttribute('type', 'checkbox');
@@ -240,29 +351,24 @@
                 label.appendChild(document.createTextNode(games[i]));
                 p.appendChild(label);
             }
-
-            function getCheckedBoxes() {
-                var checkboxes = document.getElementById('selectionForm').getElementsByTagName('input');
-                console.log(checkboxes);
-                var checkboxesChecked = [];
-                // loop over them all
-                for (var i=0; i<checkboxes.length; i++) {
-                    // And stick the checked ones onto an array...
-                    if (checkboxes[i].checked) {
-                        checkboxesChecked.push(checkboxes[i].id);
-                    }
+        }
+        var checkboxesChecked = [];
+        function getCheckedBoxes() {
+            var checkboxes = document.getElementById('selectionForm').getElementsByTagName('input');
+            checkboxesChecked = [];
+            // loop over them all
+            for (var i = 0; i < checkboxes.length; i++) {
+                // And stick the checked ones onto an array...
+                if (checkboxes[i].checked) {
+                    checkboxesChecked.push(checkboxes[i].id);
                 }
-
-                console.log(checkboxesChecked);
-                // Return the array if it is non-empty, or null
-                return checkboxesChecked.length > 0 ? checkboxesChecked : null;
-            }
-            function chkChanged() {
-                var checked = getCheckedBoxes();
-
-                //console.log('fdg');
             }
 
+            // Return the array if it is non-empty, or null
+            return checkboxesChecked.length > 0 ? checkboxesChecked : null;
+        }
+        function chkChanged() {
+            graphResize();
         }
     </script>
 
@@ -308,33 +414,55 @@
 </head>
 <body onresize="graphResize()">
 <!--Import jQuery before materialize.js-->
-<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="js/materialize.min.js"></script>
 
+<div class="navbar-fixed" >
 <nav class="blue darken-1">
     <div class="container nav-wrapper">
         <a href="#" class="brand-logo">Parity Game Dashboard</a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <a class="waves-effect waves-light btn modal-trigger blue darken-2" href="#modal1">Data selection</a>
             <!--<li><a href="sass.html">Sass</a></li>
             <li><a href="badges.html">Components</a></li>
             <li><a href="collapsible.html">JavaScript</a></li>-->
         </ul>
     </div>
 </nav>
+</div>
 
 <div class="container">
-    <form id="selectionForm" action="#">
-        <p>
-            <input type="checkbox" id="test6" checked="checked" />
-            <label for="test6">Yellow</label>
-        </p>
-    </form>
+
+    <!-- Modal Structure -->
+        <div id="modal1" class="modal bottom-sheet">
+            <div class="container">
+            <div class="modal-content">
+                <form id="selectionForm" action="#">
+                    <div class="row">
+                        <div id="sel1" class="col s4"></div>
+                        <div id="sel2" class="col s4"></div>
+                        <div id="sel3" class="col s4"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+            </div>
+        </div>
+    </div>
+
+
 
     <div id="d3measure" class="center-align">
         <svg id="graph"/>
     </div>
 
-    <h3 class="blue-text text-darken-1">Itterations</h3>
+    <h3 class="blue-text text-darken-1">Statistics</h3>
+    <div id="statistics_table" class="striped" style="margin-top: 20px">
+
+    </div>
+
+    <h3 class="blue-text text-darken-1">Iterations</h3>
     <div id="iteration_table" class="striped" style="margin-top: 20px">
 
     </div>
@@ -353,11 +481,18 @@
 
 <script>
 
+    $(document).ready(function(){
+// the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
+        $('.modal-trigger').leanModal();
+    });
+
+    var loaded = false;
+
     function graphResize() {
         var mwidth = document.getElementById('d3measure').clientWidth;
         var mheight = (mwidth / 16) * 9;
 
-        var margin = {top: 20, right: 20, bottom: 200, left: 40},
+        var margin = {top: 20, right: 20, bottom: 300, left: 80},
                 width = mwidth - margin.left - margin.right,
                 height = mheight - margin.top - margin.bottom;
 
@@ -386,7 +521,7 @@
         var tip = d3.tip()
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
-                .html(function(d) {
+                .html(function (d) {
                     return "<strong>Iterations:</strong> <span style='color:red'>" + d.iterations + "</span>";
                 })
 
@@ -401,20 +536,33 @@
 
         svg.call(tip);
 
-        d3.json("result.json", function (error, data) {
+        d3.json("/results", function (error, data) {
             if (error) throw error;
 
-            fillIterationTable(data);
-            fillPerformanceTable(data);
-            fillResultsTable(data);
-            generateCheckBoxes(data);
+            if (!loaded) {
+                loaded = true;
+                generateCheckBoxes(data.results);
+            }
 
-            var strategies = getStrategies(data);
-            var games = getGames(data);
+            var checkBoxes = getCheckedBoxes();
+            fillStatistics(data.statistics);
+            fillIterationTable(data.results);
+            fillPerformanceTable(data.results);
+            fillResultsTable(data.results);
+
+            var strategies = getStrategies(data.results);
+            var games = getGames(data.results).filter(function (d) {
+                for (var i = 0; i < checkBoxes.length; i++) {
+                    if (d == checkBoxes[i]) {
+                        return true;
+                    }
+                }
+                return false;
+            });
 
             x0.domain(games);
             x1.domain(strategies).rangeRoundBands([0, x0.rangeBand()]);
-            y.domain([0, d3.max(data, function (d) {
+            y.domain([0, d3.max(data.results, function (d) {
                 return d.iterations;
             })]);
 
@@ -449,7 +597,7 @@
             state.selectAll("rect")
                     .data(function (d) {
                                 var game = d;
-                                return data.filter(function (d) {
+                                return data.results.filter(function (d) {
                                     return d.game == game;
                                 })
                             }

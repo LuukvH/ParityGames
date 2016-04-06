@@ -25,6 +25,7 @@ public class ParityGame {
     public IAdjacencyList E;
     public int[] p;
     public Boolean[] player; // Even = true, Odd = false (hopefully!!!)
+    private String name = "";
 
     private int maxPriority;
 
@@ -37,6 +38,14 @@ public class ParityGame {
         player = new Boolean[maxvalue];
     }
 
+    public void setName(String name){
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public void setMaxPriority(int value) {
         maxPriority = value;
     }
@@ -47,6 +56,40 @@ public class ParityGame {
 
     public int[] GetPriorityList() {
         return p;
+    }
+
+    public String JSONStatistics() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        // collect data
+        int nrofedges = 0;
+        int minDegree = 0;
+        int maxDegree = 0;
+        int selfloops = 0;
+        float averageDegree = 0f;
+
+        minDegree = E.inEdges(0).size();
+        maxDegree = E.inEdges(0).size();
+        for (int i = 0; i < maxvalue; i++){
+
+            if (E.inEdges(i).size() > maxDegree)
+                maxDegree = E.inEdges(i).size();
+
+            if (E.inEdges(i).size() < minDegree)
+                minDegree = E.inEdges(i).size();
+
+            if (E.inEdges(i).contains(i))
+                selfloops++;
+
+            nrofedges += E.inEdges(i).size();
+
+            averageDegree = nrofedges / maxvalue;
+        }
+
+        // For every node
+        stringBuilder.append(String.format(Locale.US, "{\"name\": \"%s\", \"vertices\": %d, \"edges\": %d, \"mindegree\": %d, \"maxdegree\": %d, \"avgdegree\": %f, \"selfloops\": %d}", name, maxvalue, nrofedges, minDegree, maxDegree, averageDegree, selfloops ));
+        return  stringBuilder.toString();
+
     }
 
     public String JSON() {

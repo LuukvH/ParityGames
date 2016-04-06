@@ -54,7 +54,10 @@ public class RandomLiftingStrategy implements ILiftingStrategy {
     }
 
     public void Lifted(Integer v) {
+
         num_failed = 0;
+        index--;
+
     }
 
     public int Next() {

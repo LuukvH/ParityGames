@@ -7,61 +7,73 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import spark.Spark;
+
+import static spark.Spark.*;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        Boolean ptest = false;
+        boolean ptest = false;
         boolean verbose = false;
+        boolean server = false;
         int iterations = 1;
         String folder = "";
 
         // Do this one for a foler
-        args = new String[4];
-        args[0] = "-i";
-        args[1] = "2";
-        args[2] = "-t";
-        args[3] = "res/dining-games/"; // dining-games/dining_2.invariantly_plato_starves.gm";
-        //args[6] = "-s";
         /*
-        args[7] = "1";
-        args[8] = "-s";
-        args[9] = "2";
-        args[10] = "-s";
-        args[11] = "3";
-        args[12] = "-s";
-        args[13] = "4";
-*/
-        // dining_5.invariantly_plato_starves
-        //args[2] = "-t";
-        //args[3] = "res/dining-games/";
+        args = new String[8];
+        args[0] = "-i";
+        args[1] = "1";
+        args[2] = "-g";
+        args[3] = "res/elevator-games/elevator1_5.gm"; // dining-games/dining_2.invariantly_plato_starves.gm";
+        args[4] = "-s";
+        args[5] = "9";
+        args[6] = "-s";
+        args[7] = "3";
+        */
 
         Set<File> games = new OrderedHashSet<File>();
         Set<Integer> strategies = new OrderedHashSet<Integer>();
 
-        if ((args.length > 1) && (args.length % 2 == 0)) {
-            for (int i = 0; i < args.length - 1; i++) {
-                if (args[i].equalsIgnoreCase("-g")) {
-                    games.add(new File(args[i + 1]));
-                } else if (args[i].equalsIgnoreCase("-s")) {
-                    strategies.add(Integer.parseInt(args[i + 1]));
-                } else if (args[i].equalsIgnoreCase("-t")) {
-                    ptest = true;
-                    folder = args[i + 1];
-                } else if (args[i].equalsIgnoreCase("-i")) {
-                    iterations = Integer.parseInt(args[i + 1]);
+        try {
+            if ((args.length > 1)) {
+                for (int i = 0; i < args.length; i++) {
+                    if (args[i].equalsIgnoreCase("-g")) {
+                        games.add(new File(args[i + 1]));
+                    } else if (args[i].equalsIgnoreCase("-s")) {
+                        strategies.add(Integer.parseInt(args[i + 1]));
+                    } else if (args[i].equalsIgnoreCase("-t")) {
+                        ptest = true;
+                        folder = args[i + 1];
+                    } else if (args[i].equalsIgnoreCase("-i")) {
+                        iterations = Integer.parseInt(args[i + 1]);
+                    } else if (args[i].equalsIgnoreCase("-b")) {
+                        server = true;
+                    }
                 }
+            } else {
+                System.out.println("-g <filename>  To specify parity game in PGSolver format.");
+                System.out.println("-s <i>         Select lifting strategy.");
+                System.out.println("               0 = Input Order (default), 2 = Random");
+                System.out.println("-t <path>      Test all Parity games in directory.");
+                System.out.println("-i <n>         Set number of test itterations.");
+                System.out.println("-b             Start server and show results in browser.");
             }
-        } else {
+        } catch (Exception ex) {
+            System.out.println("Error: Incorrect input.");
             System.out.println("-g <filename>  To specify parity game in PGSolver format.");
             System.out.println("-s <i>         Select lifting strategy.");
             System.out.println("               0 = Input Order (default), 2 = Random");
             System.out.println("-t <path>      Test all Parity games in directory.");
             System.out.println("-i <n>         Set number of test itterations.");
+            System.out.println("-b             Start server and show results in browser.");
         }
 
         if (strategies.isEmpty()) {
@@ -90,19 +102,25 @@ public class Main {
         }
 
         ParityGame parityGame = null;
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("[");
+        StringBuilder resultsJSONString = new StringBuilder();
+        StringBuilder gamesJSONString = new StringBuilder();
+        resultsJSONString.append("\"results\":[");
+        gamesJSONString.append("\"statistics\":[");
         for (File game : games) {
             System.out.printf("Read Parity Game: %s", game.getName());
             Long startTime = System.nanoTime();
             parityGame = PGSolverReader.ReadFile(game.toString());
-            //parityGame = ParityGameFactory.CreateExample();
+            parityGame.setName(game.getName());
             System.out.printf(" (%f ms) \n", (System.nanoTime() - startTime) / (float) 1000000);
 
             if (parityGame == null) {
                 System.out.print("Empty Parity Game.");
                 return;
             }
+
+            // Create parity game information
+            gamesJSONString.append(parityGame.JSONStatistics());
+            gamesJSONString.append(",");
 
             ILiftingStrategy liftingStrategy = null;
             ParityGameSolver solver = null;
@@ -123,6 +141,9 @@ public class Main {
                     case 4:
                         liftingStrategy = new PredecessorLiftingStrategy(parityGame);
                         break;
+                    case 9:
+                        liftingStrategy = new CustomLiftingStrategy(parityGame);
+                        break;
                 }
 
                 Long durationsum = 0L;
@@ -130,10 +151,10 @@ public class Main {
                 Result result = null;
                 for (int i = 0; i < iterations; i++) {
                     solver = new ParityGameSolver(parityGame, liftingStrategy);
-                    solver.print = false;
-                    System.out.print(String.format("Evaluate: %12s - %s ", liftingStrategy.Name(), game.getName()));
+                    solver.print = verbose;
+                    System.out.print(String.format("Evaluate: %20s - %s ", liftingStrategy.Name(), game.getName()));
                     result = solver.Solve();
-                    System.out.printf("(%f ms) \n", (result.getDuration()) / (float) 1000000);
+                    System.out.printf("(%f ms, %d iterations) \n", (result.getDuration()) / (float) 1000000, result.getItterations());
 
                     durationsum += result.getDuration();
                     iterationsum += result.getItterations();
@@ -168,18 +189,21 @@ public class Main {
                 result.setItterations(iterationsum / iterations);
                 result.setDuration(durationsum / iterations);
                 result.setGame(game.getName());
-                stringBuilder.append(result.toJSON() + ",");
+                resultsJSONString.append(result.toJSON() + ",");
             }
         }
 
-        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-        stringBuilder.append("]");
+        resultsJSONString.deleteCharAt(resultsJSONString.length() - 1);
+        gamesJSONString.deleteCharAt(gamesJSONString.length() - 1);
+        resultsJSONString.append("]");
+        gamesJSONString.append("]");
+        String JSON = String.format("{%s,%s}", gamesJSONString.toString(), resultsJSONString.toString());
 
         if (ptest) {
             BufferedWriter writer = null;
             try {
                 writer = new BufferedWriter(new FileWriter(folder + "result.json"));
-                writer.write(stringBuilder.toString());
+                writer.write(JSON);
 
             } catch (IOException e) {
             } finally {
@@ -189,6 +213,23 @@ public class Main {
                 } catch (IOException e) {
                 }
             }
+        }
+
+        if (server) {
+
+            Logger.getLogger("org").setLevel(Level.OFF);
+            Logger.getLogger("akka").setLevel(Level.OFF);
+
+            Spark.staticFileLocation("/html");
+            get("/results", "application/json", (req, res) -> {
+                return JSON;
+            });
+            Spark.awaitInitialization();
+            System.out.println("Goto: localhost:4567 in your browser");
+            System.out.println("To close server press any key to exit..");
+            System.in.read();
+            Spark.stop();
+            System.out.println("Process stopped.");
         }
     }
 }
